@@ -1,0 +1,14 @@
+---
+import LayoutPrado from "../layouts/LayoutPrado.astro";
+import productos from "../data/productos.json";
+import CardProducto from "../components/CardProducto.astro";
+---
+
+<LayoutPrado>
+  <h1>Productos Destacados</h1>
+  <div class="grid-productos">
+    {productos.map((p) => (
+      <CardProducto producto={p} />
+    ))}
+  </div>
+</LayoutPrado>

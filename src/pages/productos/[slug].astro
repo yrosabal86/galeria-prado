@@ -1,0 +1,36 @@
+---
+import LayoutPrado from "../../layouts/LayoutPrado.astro";
+import productos from "../../data/productos.json";
+
+export async function getStaticPaths() {
+  return productos.map((p) => ({
+    params: { slug: p.slug },
+    props: { producto: p }
+  }));
+}
+
+const { producto } = Astro.props;
+---
+
+<LayoutPrado>
+  <div class="producto-detalle">
+    <h1>{producto.nombre}</h1>
+
+    <img src={producto.imagen} alt={producto.nombre} />
+
+    <p><strong>Precio:</strong> {producto.texto_precio}</p>
+    <p><strong>Descripción:</strong> {producto.descripcion}</p>
+
+    <button id="btn-carrito">Añadir al carrito</button>
+
+    <script>
+      document.getElementById("btn-carrito").addEventListener("click", () => {
+        const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+        carrito.push("{{producto.slug}}");
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        window.actualizarContador();
+        alert("Producto añadido al carrito");
+      });
+    </script>
+  </div>
+</LayoutPrado>

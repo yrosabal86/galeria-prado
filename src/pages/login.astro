@@ -1,0 +1,36 @@
+---
+import LayoutPrado from "../layouts/LayoutPrado.astro";
+---
+
+<LayoutPrado>
+  <h1>Iniciar Sesión</h1>
+
+  <form id="form-login" class="form">
+    <input type="email" id="email" placeholder="Correo" required />
+    <input type="password" id="password" placeholder="Contraseña" required />
+    <button type="submit">Entrar</button>
+  </form>
+
+  <p>¿No tienes cuenta? <a href="/registro">Regístrate aquí</a></p>
+
+  <script>
+    document.getElementById("form-login").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      const user = usuarios.find(u => u.email === email && u.password === password);
+
+      if (!user) {
+        alert("Correo o contraseña incorrectos");
+        return;
+      }
+
+      localStorage.setItem("usuario", JSON.stringify(user));
+      alert("Sesión iniciada");
+      window.location.href = "/";
+    });
+  </script>
+</LayoutPrado>

@@ -1,0 +1,28 @@
+---
+import LayoutPrado from "../layouts/LayoutPrado.astro";
+import productos from "../data/productos.json";
+---
+
+<LayoutPrado>
+  <h1>Carrito</h1>
+  <div id="lista"></div>
+
+  <script>
+    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    const productosData = JSON.parse(`${JSON.stringify(productos)}`);
+    const contenedor = document.getElementById("lista");
+
+    if (carrito.length === 0) {
+      contenedor.innerHTML = "<p>El carrito está vacío</p>";
+    } else {
+      let html = "";
+      carrito.forEach(slug => {
+        const p = productosData.find(prod => prod.slug === slug);
+        if (p) {
+          html += `<p>${p.título} — ${p.texto_precio}</p>`;
+        }
+      });
+      contenedor.innerHTML = html;
+    }
+  </script>
+</LayoutPrado>

@@ -1,0 +1,142 @@
+/* RESET SUAVE */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+/* BODY */
+body {
+  background: #f7f7f7;
+  color: #333;
+}
+
+/* HEADER */
+header {
+  background: #2c3e50;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  transition: background .2s;
+}
+
+.menu a:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+header h1 {
+  margin-right: 2rem;
+}
+
+.menu a {
+  font-size: 1rem;
+}
+
+#contador-carrito {
+  font-size: 1.2rem;
+  background: #27ae60;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+}
+
+/* GRID DE PRODUCTOS */
+.grid-productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+/* TARJETAS */
+.card {
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform .2s, box-shadow .2s;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.card img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+/* BOTÓN BONITO */
+button {
+  background: #2980b9;
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+button:hover {
+  background: #1f6391;
+}
+
+/* PÁGINA DEL PRODUCTO */
+.producto-detalle img {
+  width: 350px;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+/* INICIO */
+.inicio {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.inicio h1 {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+}
+
+.inicio p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.inicio-botones {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.btn {
+  background: #2980b9;
+  color: white;
+  padding: 0.8rem 1.4rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background .2s;
+}
+
+.btn:hover {
+  background: #1f6391;
+}

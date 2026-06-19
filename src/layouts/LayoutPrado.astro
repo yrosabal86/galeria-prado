@@ -1,0 +1,65 @@
+---
+const { children } = Astro.props;
+---
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Galería del Prado</title>
+    <!-- Usamos la ruta donde REALMENTE está tu CSS -->
+    <link rel="stylesheet" href="/public/styles/global.css">
+  </head>
+
+  <body>
+    <header>
+      <h1>Galería del Prado</h1>
+
+      <nav class="menu">
+        <a href="/">Inicio</a>
+        <a href="/galeria">Galería</a>
+        <a href="/destacados">Destacados</a>
+        <a href="/carrito">Carrito <span id="contador-carrito"></span></a>
+        <span id="usuario-menu"></span>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <script>
+      // Contador carrito
+      function actualizarContador() {
+        const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+        const span = document.getElementById("contador-carrito");
+        if (span) {
+          span.innerText = `(${carrito.length})`;
+        }
+      }
+      actualizarContador();
+      window.actualizarContador = actualizarContador;
+
+      // Login / logout en menú
+      function mostrarUsuario() {
+        const usuario = JSON.parse(localStorage.getItem("usuario"));
+        const contenedor = document.getElementById("usuario-menu");
+        if (!contenedor) return;
+
+        if (usuario) {
+          contenedor.innerHTML = `
+            <span>Hola, ${usuario.email}</span>
+            <button id="logout" style="margin-left:10px;">Salir</button>
+          `;
+          document.getElementById("logout").onclick = () => {
+            localStorage.removeItem("usuario");
+            alert("Sesión cerrada");
+            window.location.reload();
+          };
+        } else {
+          contenedor.innerHTML = `<a href="/login">Iniciar sesión</a>`;
+        }
+      }
+      mostrarUsuario();
+    </script>
+  </body>
+</html>

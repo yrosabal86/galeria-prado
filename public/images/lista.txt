@@ -1,0 +1,5 @@
+ El volumen de la unidad C es Sistema
+ El n£mero de serie del volumen es: 9652-0C81
+
+ Directorio de C:\SSBW\SSBW\Tarea12-Astro\proto-photon\public\images
+
