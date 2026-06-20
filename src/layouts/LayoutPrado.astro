@@ -11,15 +11,23 @@ const { children } = Astro.props;
 
   <body>
     <header>
-      <h1>Galería del Prado</h1>
+      <div class="header-inner">
+        <a href="/" class="logo">
+          <span class="logo-text">Galería del Prado</span>
+        </a>
 
-      <nav class="menu">
-        <a href="/">Inicio</a>
-        <a href="/galeria">Galería</a>
-        <a href="/destacados">Destacados</a>
-        <a href="/carrito">Carrito <span id="contador-carrito"></span></a>
-        <span id="usuario-menu"></span>
-      </nav>
+        <nav class="menu">
+          <a href="/" class="nav-link">Inicio</a>
+          <a href="/galeria" class="nav-link">Galería</a>
+          <a href="/destacados" class="nav-link">Destacados</a>
+          <a href="/carrito" class="nav-link nav-carrito" title="Ver carrito">
+            <span class="carrito-icono">🛒</span>
+            <span class="carrito-texto">Carrito</span>
+            <span id="contador-carrito" class="carrito-badge"></span>
+          </a>
+          <span id="usuario-menu" class="usuario-menu"></span>
+        </nav>
+      </div>
     </header>
 
     <main>
@@ -28,33 +36,86 @@ const { children } = Astro.props;
 
     <script>
       function actualizarContador() {
-        const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+        const data = JSON.parse(localStorage.getItem('carrito')) || [];
+        const total = data.reduce((acc, item) => {
+          return acc + (typeof item === "string" ? 1 : (item.cantidad || 1));
+        }, 0);
         const span = document.getElementById("contador-carrito");
-        if (span) span.innerText = `(${carrito.length})`;
+        if (span) {
+          span.innerText = total > 0 ? total : "";
+          span.style.display = total > 0 ? "inline-flex" : "none";
+        }
       }
       actualizarContador();
       window.actualizarContador = actualizarContador;
 
+      function obtenerUsuario() {
+        try {
+          return JSON.parse(sessionStorage.getItem("usuario")) ||
+                 JSON.parse(localStorage.getItem("usuario"));
+        } catch (e) {
+          return null;
+        }
+      }
+
       function mostrarUsuario() {
-        const usuario = JSON.parse(localStorage.getItem("usuario"));
+        const usuario = obtenerUsuario();
         const contenedor = document.getElementById("usuario-menu");
 
         if (usuario) {
+          const inicial = (usuario.email || "U").charAt(0).toUpperCase();
           contenedor.innerHTML = `
-            <span>Hola, ${usuario.email}</span>
-            <button id="logout" style="margin-left:10px;">Salir</button>
+            <div class="usuario-wrap">
+              <button class="usuario-btn" id="usuarioBtn" type="button" title="${usuario.email}">
+                <span class="usuario-avatar">${inicial}</span>
+                <span class="usuario-nombre">${(usuario.email || '').split('@')[0]}</span>
+                <span class="usuario-flecha">▾</span>
+              </button>
+              <div class="usuario-dropdown" id="usuarioDropdown">
+                <div class="dropdown-header">
+                  <div class="dropdown-avatar">${inicial}</div>
+                  <div>
+                    <strong>${(usuario.email || '').split('@')[0]}</strong>
+                    <small>${usuario.email}</small>
+                  </div>
+                </div>
+                <a href="/carrito" class="dropdown-item">
+                  <span>🛒</span> Mi carrito
+                </a>
+                <button type="button" class="dropdown-item dropdown-logout" id="logout">
+                  <span>🚪</span> Cerrar sesión
+                </button>
+              </div>
+            </div>
           `;
-          document.getElementById("logout").onclick = () => {
+
+          const btn = document.getElementById("usuarioBtn");
+          const dropdown = document.getElementById("usuarioDropdown");
+
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle("dropdown-open");
+          });
+
+          document.addEventListener("click", () => {
+            dropdown.classList.remove("dropdown-open");
+          });
+
+          document.getElementById("logout").addEventListener("click", () => {
             localStorage.removeItem("usuario");
+            sessionStorage.removeItem("usuario");
             if (window.toast) {
               window.toast("Sesión cerrada correctamente", "info", 2500);
-            } else {
-              alert("Sesión cerrada");
             }
-            setTimeout(() => window.location.reload(), 600);
-          };
+            setTimeout(() => window.location.reload(), 500);
+          });
         } else {
-          contenedor.innerHTML = `<a href="/login">Iniciar sesión</a>`;
+          contenedor.innerHTML = `
+            <a href="/login" class="btn-login" title="Iniciar sesión">
+              <span class="login-icono">👤</span>
+              <span class="login-texto">Iniciar sesión</span>
+            </a>
+          `;
         }
       }
       mostrarUsuario();
