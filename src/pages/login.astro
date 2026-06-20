@@ -21,16 +21,26 @@ import LayoutPrado from "../layouts/LayoutPrado.astro";
       const password = document.getElementById("password").value;
 
       const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-      const user = usuarios.find(u => u.email === email && u.password === password);
+
+      const user = usuarios.find(
+        (u) => u.email === email && u.password === password
+      );
 
       if (!user) {
-        alert("Correo o contraseña incorrectos");
+        if (window.toast) window.toast("Correo o contraseña incorrectos", "error", 3500);
+        else alert("Correo o contraseña incorrectos");
         return;
       }
 
       localStorage.setItem("usuario", JSON.stringify(user));
-      alert("Sesión iniciada");
-      window.location.href = "/";
+
+      if (window.toast) {
+        window.toast("Sesión iniciada correctamente", "success", 2500);
+        setTimeout(() => { window.location.href = "/"; }, 700);
+      } else {
+        alert("Sesión iniciada");
+        window.location.href = "/";
+      }
     });
   </script>
 </LayoutPrado>

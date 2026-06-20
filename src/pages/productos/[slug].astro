@@ -13,24 +13,134 @@ const { producto } = Astro.props;
 ---
 
 <LayoutPrado>
-  <div class="producto-detalle">
-    <h1>{producto.nombre}</h1>
+  <div class="detalle-producto">
+    <img src={producto.imagen} alt={producto.título} class="detalle-img" />
 
-    <img src={producto.imagen} alt={producto.nombre} />
+    <div class="detalle-info">
+      <h1>{producto.título}</h1>
+      <p class="precio">{producto.texto_precio}</p>
+      <p class="descripcion">{producto.descripcion}</p>
 
-    <p><strong>Precio:</strong> {producto.texto_precio}</p>
-    <p><strong>Descripción:</strong> {producto.descripcion}</p>
+      <div class="cantidad-selector">
+        <label for="cantidad">Cantidad:</label>
+        <button type="button" id="menos" class="btn-qty">−</button>
+        <input type="number" id="cantidad" value="1" min="1" max="99" />
+        <button type="button" id="mas" class="btn-qty">+</button>
+      </div>
 
-    <button id="btn-carrito">Añadir al carrito</button>
-
-    <script>
-      document.getElementById("btn-carrito").addEventListener("click", () => {
-        const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
-        carrito.push("{{producto.slug}}");
-        localStorage.setItem("carrito", JSON.stringify(carrito));
-        window.actualizarContador();
-        alert("Producto añadido al carrito");
-      });
-    </script>
+      <button id="add">Añadir al carrito</button>
+    </div>
   </div>
 </LayoutPrado>
+
+<script is:inline define:vars={{ slug: producto.slug, titulo: producto.título }}>
+  document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("add");
+    const input = document.getElementById("cantidad");
+    const btnMas = document.getElementById("mas");
+    const btnMenos = document.getElementById("menos");
+    if (!btn || !input) return;
+
+    btnMas.addEventListener("click", () => {
+      const v = Math.min(99, (parseInt(input.value, 10) || 1) + 1);
+      input.value = v;
+    });
+    btnMenos.addEventListener("click", () => {
+      const v = Math.max(1, (parseInt(input.value, 10) || 1) - 1);
+      input.value = v;
+    });
+    input.addEventListener("change", () => {
+      let v = parseInt(input.value, 10);
+      if (isNaN(v) || v < 1) v = 1;
+      if (v > 99) v = 99;
+      input.value = v;
+    });
+
+    function anadir() {
+      const cantidad = Math.max(1, parseInt(input.value, 10) || 1);
+      let carrito;
+      try {
+        carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+      } catch (e) {
+        carrito = [];
+      }
+      // Migrar formato antiguo (array de slugs) si existe
+      if (carrito.length > 0 && typeof carrito[0] === "string") {
+        const conv = {};
+        carrito.forEach(s => { conv[s] = (conv[s] || 0) + 1; });
+        carrito = Object.keys(conv).map(s => ({ slug: s, cantidad: conv[s] }));
+      }
+      const existente = carrito.find(i => i.slug === slug);
+      if (existente) {
+        existente.cantidad += cantidad;
+      } else {
+        carrito.push({ slug, cantidad });
+      }
+      localStorage.setItem("carrito", JSON.stringify(carrito));
+
+      if (window.actualizarContador) window.actualizarContador();
+
+      const msg = cantidad === 1
+        ? `"${titulo}" se añadió al carrito`
+        : `${cantidad} × "${titulo}" se añadieron al carrito`;
+      if (window.toast) {
+        window.toast(msg, "success", 2500);
+      } else {
+        alert("Producto añadido al carrito");
+      }
+
+      // Reset a 1
+      input.value = 1;
+    }
+
+    btn.addEventListener("click", anadir);
+  });
+</script>
+
+<style>
+  .cantidad-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 15px 0 20px;
+  }
+  .cantidad-selector label {
+    font-weight: 600;
+    color: #222;
+  }
+  .cantidad-selector input[type="number"] {
+    width: 60px;
+    text-align: center;
+    padding: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+  .cantidad-selector input[type="number"]::-webkit-inner-spin-button,
+  .cantidad-selector input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .btn-qty {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f4f4f4;
+    color: #222;
+    border: 1px solid #ddd;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+  }
+  .btn-qty:hover {
+    background: #2980b9;
+    color: white;
+    border-color: #2980b9;
+  }
+</style>

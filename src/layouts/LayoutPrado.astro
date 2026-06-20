@@ -6,7 +6,6 @@ const { children } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <title>Galería del Prado</title>
-    <!-- Usamos la ruta donde REALMENTE está tu CSS -->
     <link rel="stylesheet" href="/styles/global.css">
   </head>
 
@@ -28,22 +27,17 @@ const { children } = Astro.props;
     </main>
 
     <script>
-      // Contador carrito
       function actualizarContador() {
         const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
         const span = document.getElementById("contador-carrito");
-        if (span) {
-          span.innerText = `(${carrito.length})`;
-        }
+        if (span) span.innerText = `(${carrito.length})`;
       }
       actualizarContador();
       window.actualizarContador = actualizarContador;
 
-      // Login / logout en menú
       function mostrarUsuario() {
         const usuario = JSON.parse(localStorage.getItem("usuario"));
         const contenedor = document.getElementById("usuario-menu");
-        if (!contenedor) return;
 
         if (usuario) {
           contenedor.innerHTML = `
@@ -52,8 +46,12 @@ const { children } = Astro.props;
           `;
           document.getElementById("logout").onclick = () => {
             localStorage.removeItem("usuario");
-            alert("Sesión cerrada");
-            window.location.reload();
+            if (window.toast) {
+              window.toast("Sesión cerrada correctamente", "info", 2500);
+            } else {
+              alert("Sesión cerrada");
+            }
+            setTimeout(() => window.location.reload(), 600);
           };
         } else {
           contenedor.innerHTML = `<a href="/login">Iniciar sesión</a>`;
@@ -61,5 +59,8 @@ const { children } = Astro.props;
       }
       mostrarUsuario();
     </script>
+
+    <!-- Sistema de notificaciones toast -->
+    <script src="/scripts/toast.js" is:inline></script>
   </body>
 </html>

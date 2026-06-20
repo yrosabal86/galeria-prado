@@ -22,16 +22,22 @@ import LayoutPrado from "../layouts/LayoutPrado.astro";
 
       let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
 
-      if (usuarios.find(u => u.email === email)) {
-        alert("Este correo ya está registrado");
+      if (usuarios.find((u) => u.email === email)) {
+        if (window.toast) window.toast("Este correo ya está registrado", "error", 3500);
+        else alert("Este correo ya está registrado");
         return;
       }
 
       usuarios.push({ email, password });
       localStorage.setItem("usuarios", JSON.stringify(usuarios));
 
-      alert("Cuenta creada");
-      window.location.href = "/login";
+      if (window.toast) {
+        window.toast("Cuenta creada correctamente", "success", 2500);
+        setTimeout(() => { window.location.href = "/login"; }, 700);
+      } else {
+        alert("Cuenta creada correctamente");
+        window.location.href = "/login";
+      }
     });
   </script>
 </LayoutPrado>

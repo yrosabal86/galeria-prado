@@ -6,11 +6,11 @@ import productos from "../data/productos.json";
 <LayoutPrado>
   <div class="grid-productos">
     {productos.map((p) => (
-      <div class="card">
+      <a href={`/productos/${p.slug}`} class="card">
         <img src={p.imagen} alt={p.título} />
         <h3>{p.título}</h3>
         <p>{p.texto_precio}</p>
-      </div>
+      </a>
     ))}
   </div>
 </LayoutPrado>

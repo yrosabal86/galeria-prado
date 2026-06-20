@@ -6,23 +6,221 @@ import productos from "../data/productos.json";
 <LayoutPrado>
   <h1>Carrito</h1>
   <div id="lista"></div>
+  <div id="total"></div>
+  <div id="sugerencias" class="sugerencias"></div>
+  <div class="acciones-carrito">
+    <button id="seguir" type="button">← Seguir comprando</button>
+    <button id="vaciar" type="button">Vaciar carrito</button>
+    <button id="comprar" type="button">Finalizar compra</button>
+  </div>
 
-  <script>
-    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    const productosData = JSON.parse(`${JSON.stringify(productos)}`);
-    const contenedor = document.getElementById("lista");
+  <script is:inline define:vars={{ productos }}>
+    // ============================================
+    // ESTADO: el carrito guarda objetos { slug, cantidad }
+    // ============================================
+    const STORAGE_KEY = "carrito";
 
-    if (carrito.length === 0) {
-      contenedor.innerHTML = "<p>El carrito está vacío</p>";
-    } else {
-      let html = "";
-      carrito.forEach(slug => {
-        const p = productosData.find(prod => prod.slug === slug);
-        if (p) {
-          html += `<p>${p.título} — ${p.texto_precio}</p>`;
-        }
-      });
-      contenedor.innerHTML = html;
+    function cargarCarrito() {
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      // Migración: si el carrito viejo era array de slugs, lo convertimos
+      if (data.length > 0 && typeof data[0] === "string") {
+        const convertido = {};
+        data.forEach(slug => { convertido[slug] = (convertido[slug] || 0) + 1; });
+        const nuevo = Object.keys(convertido).map(slug => ({ slug, cantidad: convertido[slug] }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(nuevo));
+        return nuevo;
+      }
+      return data;
     }
+
+    const productosData = productos;
+    let carrito = cargarCarrito();
+
+    const contenedor = document.getElementById("lista");
+    const totalCont = document.getElementById("total");
+    const sugerenciasCont = document.getElementById("sugerencias");
+    const btnVaciar = document.getElementById("vaciar");
+    const btnComprar = document.getElementById("comprar");
+    const btnSeguir = document.getElementById("seguir");
+
+    if (!contenedor) {
+      console.error("No existe #lista");
+    }
+
+    function parsePrecio(texto) {
+      if (!texto) return 0;
+      const n = parseFloat(String(texto).replace(/[^\d.,]/g, '').replace(',', '.'));
+      return isNaN(n) ? 0 : n;
+    }
+
+    function guardar() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(carrito));
+      if (window.actualizarContador) window.actualizarContador();
+    }
+
+    function totalItems() {
+      return carrito.reduce((acc, item) => acc + item.cantidad, 0);
+    }
+
+    function totalPrecio() {
+      return carrito.reduce((acc, item) => {
+        const p = productosData.find(prod => prod.slug === item.slug);
+        return acc + (p ? parsePrecio(p.texto_precio) * item.cantidad : 0);
+      }, 0);
+    }
+
+    function cambiarCantidad(slug, delta) {
+      const item = carrito.find(i => i.slug === slug);
+      if (!item) return;
+      item.cantidad += delta;
+      if (item.cantidad <= 0) {
+        carrito = carrito.filter(i => i.slug !== slug);
+      }
+      guardar();
+      render();
+    }
+
+    function eliminarItem(slug) {
+      const p = productosData.find(prod => prod.slug === slug);
+      const nombre = p ? p.título : "Producto";
+      carrito = carrito.filter(i => i.slug !== slug);
+      guardar();
+      if (window.toast) window.toast(`Se eliminó "${nombre}" del carrito`, "info", 2500);
+      render();
+    }
+
+    function renderSugerencias() {
+      const enCarrito = new Set(carrito.map(i => i.slug));
+      const candidatos = productosData.filter(p => !enCarrito.has(p.slug));
+      for (let i = candidatos.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [candidatos[i], candidatos[j]] = [candidatos[j], candidatos[i]];
+      }
+      const sugerencias = candidatos.slice(0, 3);
+      if (sugerencias.length === 0 || carrito.length === 0) {
+        sugerenciasCont.innerHTML = "";
+        return;
+      }
+      sugerenciasCont.innerHTML = `
+        <h3>También podría interesarte</h3>
+        <div class="grid-sugerencias">
+          ${sugerencias.map(p => `
+            <a href="/productos/${p.slug}" class="sugerencia">
+              <img src="${p.imagen}" alt="${p.título}" />
+              <div class="sug-info">
+                <strong>${p.título}</strong>
+                <span>${p.texto_precio}</span>
+              </div>
+            </a>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function render() {
+      if (carrito.length === 0) {
+        contenedor.innerHTML = `
+          <div class="carrito-vacio">
+            <div class="vacio-icono">🛒</div>
+            <p class="vacio-titulo">Tu carrito está vacío</p>
+            <p class="vacio-sub">Explora la galería y añade tus obras favoritas</p>
+            <a href="/galeria" class="btn-ir-galeria">Ir a la galería</a>
+          </div>
+        `;
+        totalCont.innerHTML = "";
+        btnVaciar.style.display = "none";
+        btnComprar.style.display = "none";
+        btnSeguir.style.display = "none";
+        renderSugerencias();
+        return;
+      }
+
+      btnVaciar.style.display = "inline-block";
+      btnComprar.style.display = "inline-block";
+      btnSeguir.style.display = "inline-block";
+
+      let html = "";
+      carrito.forEach((item) => {
+        const p = productosData.find(prod => prod.slug === item.slug);
+        if (!p) return;
+        const precioUnit = parsePrecio(p.texto_precio);
+        const subtotal = precioUnit * item.cantidad;
+        html += `
+          <div class="item-carrito" data-slug="${item.slug}">
+            <img src="${p.imagen}" width="80" alt="${p.título}" />
+            <div class="item-info">
+              <strong>${p.título}</strong>
+              <span class="item-precio-unit">${p.texto_precio} / unidad</span>
+              <span class="item-subtotal">Subtotal: ${subtotal.toFixed(2)} EUR</span>
+            </div>
+            <div class="controles-cantidad">
+              <button class="btn-cantidad restar" type="button" aria-label="Restar">−</button>
+              <span class="cantidad-num">${item.cantidad}</span>
+              <button class="btn-cantidad sumar" type="button" aria-label="Sumar">+</button>
+            </div>
+            <button class="eliminar-item" type="button" aria-label="Eliminar">✕</button>
+          </div>
+        `;
+      });
+
+      contenedor.innerHTML = html;
+      const total = totalPrecio();
+      const items = totalItems();
+      totalCont.innerHTML = `
+        <div class="total-line"><span>Items:</span><strong>${items}</strong></div>
+        <h2>Total: ${total.toFixed(2)} EUR</h2>
+      `;
+
+      document.querySelectorAll(".item-carrito").forEach(row => {
+        const slug = row.getAttribute("data-slug");
+        row.querySelector(".sumar").addEventListener("click", () => cambiarCantidad(slug, +1));
+        row.querySelector(".restar").addEventListener("click", () => cambiarCantidad(slug, -1));
+        row.querySelector(".eliminar-item").addEventListener("click", () => eliminarItem(slug));
+      });
+
+      renderSugerencias();
+    }
+
+    btnSeguir.addEventListener("click", () => {
+      window.location.href = "/galeria";
+    });
+
+    btnVaciar.addEventListener("click", () => {
+      const accion = () => {
+        carrito = [];
+        guardar();
+        if (window.toast) window.toast("Carrito vaciado", "warning", 2500);
+        render();
+      };
+      if (window.toastConfirm) {
+        window.toastConfirm("¿Estás seguro de vaciar el carrito?", accion);
+      } else if (confirm("¿Vaciar el carrito?")) {
+        accion();
+      }
+    });
+
+    btnComprar.addEventListener("click", () => {
+      if (carrito.length === 0) return;
+      const total = totalPrecio().toFixed(2);
+      const items = totalItems();
+      const accion = () => {
+        carrito = [];
+        guardar();
+        if (window.toast) {
+          window.toast(`¡Compra realizada! ${items} ${items === 1 ? 'artículo' : 'artículos'} por ${total} EUR`, "success", 4500);
+        } else {
+          alert("¡Compra realizada con éxito! " + total);
+        }
+        render();
+      };
+      if (window.toastConfirm) {
+        window.toastConfirm(`¿Confirmar compra de ${items} artículo(s) por ${total} EUR?`, accion);
+      } else if (confirm("¿Confirmar compra?")) {
+        accion();
+      }
+    });
+
+    render();
   </script>
+
 </LayoutPrado>

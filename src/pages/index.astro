@@ -1,14 +1,21 @@
 ---
 import LayoutPrado from "../layouts/LayoutPrado.astro";
+import productos from "../data/productos.json";
 ---
 
 <LayoutPrado>
   <section class="inicio">
-    <h1>Bienvenido a la Galería del Prado</h1>
-    <p>Explora nuestras obras destacadas y descubre la colección completa.</p>
-    <div class="inicio-botones">
-      <a href="/galeria" class="btn">Ver Galería</a>
-      <a href="/destacados" class="btn">Destacados</a>
+    <h2>Bienvenido a la Galería del Prado</h2>
+    <p>Explora nuestras obras destacadas</p>
+
+    <div class="grid-productos">
+      {productos.slice(0, 4).map((p) => (
+        <a href={`/productos/${p.slug}`} class="card">
+          <img src={p.imagen} alt={p.título} />
+          <h3>{p.título}</h3>
+          <p>{p.texto_precio}</p>
+        </a>
+      ))}
     </div>
   </section>
 </LayoutPrado>

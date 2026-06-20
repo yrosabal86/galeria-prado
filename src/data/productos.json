@@ -1,74 +1,98 @@
 [
   {
+    "id": 1,
     "título": "Acantilados Guethary",
     "texto_precio": "10 EUR",
     "imagen": "/images/acantilados__guethary_.jpg",
-    "slug": "acantilados-guethary"
+    "slug": "acantilados-guethary",
+    "descripcion": "Obra inspirada en los acantilados de Guethary."
   },
   {
+    "id": 2,
     "título": "Anna Escher von Muralt",
     "texto_precio": "12 EUR",
     "imagen": "/images/anna_escher_von_muralt.jpg",
-    "slug": "anna-escher-von-muralt"
+    "slug": "anna-escher-von-muralt",
+    "descripcion": "Retrato clásico de Anna Escher."
   },
   {
+    "id": 3,
     "título": "Chicos en la Playa",
     "texto_precio": "9 EUR",
     "imagen": "/images/chicos_en_la_playa.jpg",
-    "slug": "chicos-en-la-playa"
+    "slug": "chicos-en-la-playa",
+    "descripcion": "Escena costera con niños jugando."
   },
   {
+    "id": 4,
     "título": "Ciociara",
     "texto_precio": "11 EUR",
     "imagen": "/images/ciociara.jpg",
-    "slug": "ciociara"
+    "slug": "ciociara",
+    "descripcion": "Retrato expresivo de Ciociara."
   },
   {
+    "id": 5,
     "título": "Desnudo en la Playa de Portici",
     "texto_precio": "14 EUR",
     "imagen": "/images/desnudo_en_la_playa_de_portici.jpg",
-    "slug": "desnudo-playa-portici"
+    "slug": "desnudo-playa-portici",
+    "descripcion": "Obra clásica ambientada en Portici."
   },
   {
+    "id": 6,
     "título": "El Pino de Bejar",
     "texto_precio": "10 EUR",
     "imagen": "/images/el_pino_de_b_jar.jpg",
-    "slug": "el-pino-de-bejar"
+    "slug": "el-pino-de-bejar",
+    "descripcion": "Paisaje natural con un pino emblemático."
   },
   {
+    "id": 7,
     "título": "El Rapto de Helena",
     "texto_precio": "13 EUR",
     "imagen": "/images/el_rapto_de_helena.jpg",
-    "slug": "el-rapto-de-helena"
+    "slug": "el-rapto-de-helena",
+    "descripcion": "Escena mitológica del rapto de Helena."
   },
   {
+    "id": 8,
     "título": "En Vue",
     "texto_precio": "8 EUR",
     "imagen": "/images/en_vue.jpg",
-    "slug": "en-vue"
+    "slug": "en-vue",
+    "descripcion": "Obra moderna con estilo minimalista."
   },
   {
+    "id": 9,
     "título": "Estudio de Marabés",
     "texto_precio": "12 EUR",
     "imagen": "/images/estudio_de_marab_es.jpg",
-    "slug": "estudio-marabes"
+    "slug": "estudio-marabes",
+    "descripcion": "Estudio artístico de Marabés."
   },
   {
+    "id": 10,
     "título": "Granada",
     "texto_precio": "10 EUR",
     "imagen": "/images/granada.jpg",
-    "slug": "granada"
+    "slug": "granada",
+    "descripcion": "Paisaje inspirado en Granada."
   },
   {
+    "id": 11,
     "título": "La Modelo Aline Masson",
     "texto_precio": "15 EUR",
     "imagen": "/images/la_modelo_aline_masson.jpg",
-    "slug": "aline-masson"
+    "slug": "aline-masson",
+    "descripcion": "Retrato de la modelo Aline Masson."
   },
   {
+    "id": 12,
     "título": "Paisaje de Portici",
     "texto_precio": "11 EUR",
     "imagen": "/images/paisaje_de_portici.jpg",
-    "slug": "paisaje-portici"
+    "slug": "paisaje-portici",
+    "descripcion": "Paisaje clásico de Portici."
   }
 ]
